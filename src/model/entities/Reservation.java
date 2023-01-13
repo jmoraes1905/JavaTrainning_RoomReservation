@@ -1,8 +1,11 @@
 package model.entities;
 
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import model.exception.DomainException;
 
 public class Reservation {
 
@@ -12,7 +15,11 @@ public class Reservation {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); //We want to instantiate just one sdf for each reservation, so we use an static type
 	
-	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) throws DomainException { //RuntimeException does not require throws declaration
+		//Defensive Programming: treats the exceptions at the start of the methods
+		if(!checkOut.after(checkIn)){
+			throw new DomainException("Reservation error. Enter future dates");
+			}
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -41,22 +48,20 @@ public class Reservation {
 		this.checkOut = checkOut;
 	}*/
 	
-	public String updateDates(Date checkIn, Date checkOut) {
+	public void updateDates(Date checkIn, Date checkOut) throws DomainException {
 		
 		//Update dates must be future dates
 		Date now = new Date();
 		if(checkIn.before(now)||checkOut.before(now)) {
-				return "Reservation error. Enter future dates";
+			throw new DomainException("Reservation error. Enter future dates");
 			}
 				
-		if(!checkOut.after(checkIn)) {
-			return "Reservation error. Enter future dates";
+		if(!checkOut.after(checkIn)){
+			throw new DomainException("Reservation error. Enter future dates");
 			}
 		
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		
-		return null;
 	}
 	
 	@Override
